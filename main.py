@@ -3,6 +3,8 @@ import telebot
 from datetime import datetime, timedelta
 from threading import Thread, Timer
 import config  # Import your config.py file
+import threading
+from app import app  # Import your Flask app
 
 # API URLs
 url = "https://spec.iitschool.com/api/v1/batch-subject/{batch_id}"
@@ -112,6 +114,9 @@ def check_for_new_lectures(chat_id, batchId, token):
 
 # Initialize the bot
 bot = telebot.TeleBot(config.BOT_TOKEN)  # Use the token from config.py
+
+flask_thread = threading.Thread(target=app.run, kwargs={'host': '0.0.0.0', 'port': 8080})
+flask_thread.start()
 
 # Start the bot
 @bot.message_handler(commands=['start'])
