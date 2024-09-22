@@ -4,9 +4,6 @@ from datetime import datetime, timedelta
 from threading import Thread, Timer
 import config  # Import your config.py file
 
-# Initialize the bot
-bot = telebot.TeleBot(config.BOT_TOKEN)  # Use the token from config.py
-
 # API URLs
 url = "https://spec.iitschool.com/api/v1/batch-subject/{batch_id}"
 live_url = "https://spec.iitschool.com/api/v1/batch-detail/{batchId}?subjectId={subjectId}&topicId=live"
@@ -59,7 +56,7 @@ def get_live_lecture_links(batchId, subjectId, token):
                 brightcove_link = bc_url + str(lesson_url) + "/master.m3u8?bcov_auth=" + brightcove_token
                 live_links.append(f"{lesson_name}: {brightcove_link}")        
         return live_links
-    else:
+    else:        
         return f"Request failed with status code {response.status_code}"
 
 # Function to get subject details
@@ -113,6 +110,9 @@ def check_for_new_lectures(chat_id, batchId, token):
     # Schedule the next check
     Timer(60, check_for_new_lectures, [chat_id, batchId, token]).start()
 
+# Initialize the bot
+bot = telebot.TeleBot(config.BOT_TOKEN)  # Use the token from config.py
+
 # Start the bot
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -125,6 +125,6 @@ def send_welcome(message):
     Thread(target=check_for_new_lectures, args=(message.chat.id, batchId, token)).start()
 
     bot.reply_to(message, "Welcome! I'm now checking for new lectures automatically.")
-    bot.polling(none_stop=True) 
-       # Implement logic to handle the error, such as retrying or logging the error
-   
+
+# Keep the bot running continuously
+bot.polling(none_stop=True)
