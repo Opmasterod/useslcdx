@@ -5,6 +5,5 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .  # This will copy config.py as well
-
+COPY main.py config.py /app
 CMD ["python", "main.py"]
