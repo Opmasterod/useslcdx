@@ -125,10 +125,9 @@ def send_welcome(message):
     Thread(target=check_for_new_lectures, args=(message.chat.id, batchId, token)).start()
 
     bot.reply_to(message, "Welcome! I'm now checking for new lectures automatically.")
-
-   try:
+    try:
        bot.polling()
-   except Exception as e:
+    except Exception as e:
        print(f"Error during polling: {e}")
        # Implement logic to handle the error, such as retrying or logging the error
    
