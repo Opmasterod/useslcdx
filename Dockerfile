@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.10-slim  # Use a slimmer base image
 
 # Set work directory
 WORKDIR /app
@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the port that your application listens on
-EXPOSE 80
+EXPOSE 8080  # Use the correct port (8080)
 
 # Run your application
-CMD ["python", "bot.py"]
+CMD ["python", "main.py"]
