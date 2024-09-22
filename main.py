@@ -126,4 +126,9 @@ def send_welcome(message):
 
     bot.reply_to(message, "Welcome! I'm now checking for new lectures automatically.")
 
-bot.polling()
+   try:
+       bot.polling()
+   except Exception as e:
+       print(f"Error during polling: {e}")
+       # Implement logic to handle the error, such as retrying or logging the error
+   
