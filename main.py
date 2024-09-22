@@ -110,7 +110,7 @@ def check_for_new_lectures(chat_id, batchId, token):
             previous_links = latest_links  # Update previous links with the latest
     
     # Schedule the next check
-    Timer(60, check_for_new_lectures, [chat_id, batchId, token]).start()
+    Timer(86400, check_for_new_lectures, [chat_id, batchId, token]).start()
 
 # Initialize the bot
 bot = telebot.TeleBot(config.BOT_TOKEN)  # Use the token from config.py
