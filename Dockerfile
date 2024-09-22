@@ -17,3 +17,6 @@ EXPOSE 8080  # Use the correct port (8080)
 
 # Run your application
 CMD ["python", "main.py"]
+
+# Create a health check endpoint in your 'app.py' file
+# (Refer to the previous responses for an example of this)
