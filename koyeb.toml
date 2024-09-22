@@ -1,0 +1,28 @@
+   [build]
+   base-image = "python:3.10"
+   
+   [run]
+   command = ["python", "bot.py"]
+   
+   [[ports]]
+   port = 80
+   
+   [[env]]
+   name = "BOT_TOKEN"
+   value = "7821208337:AAEUjffvXjbjqOsgzWc6uDAckQYFAQgjlrM" 
+   
+   [[env]]
+   name = "API_TOKEN"
+   value = "07e14af4156c909f6477e07539f89abc97cf9ddb" 
+   
+   [[env]]
+   name = "BATCH_ID"
+   value = "100"  
+   
+   [[env]]
+   name = "API_ID"
+   value = "23713783" 
+
+   [[env]]
+   name = "API_HASH"
+   value = "2daa157943cb2d76d149c4de0b036a99"
