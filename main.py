@@ -6,6 +6,7 @@ import time
 import backoff
 from threading import Thread
 from datetime import datetime
+from urllib.parse import quote  # Replace deprecated url_quote with quote
 
 # Flask app for Koyeb deployment
 app = Flask(__name__)
