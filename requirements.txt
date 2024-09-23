@@ -1,5 +1,7 @@
-requests
 telebot
 datetime
-flask
+requests
+python-telegram-bot
+Flask
+backoff
 
