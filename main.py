@@ -10,8 +10,8 @@ from threading import Thread
 app = Flask(__name__)
 
 # Telegram Bot Information
-BOT_TOKEN = '7251113580:AAEsIiT8af3vVaDVwStdFiHhATMcPoXmrPs'
-CHAT_ID = '-1002225506571'
+BOT_TOKEN = '7106709057:AAEDzg7JSl0lTC-Nc5kcyKen6gYWLiywMdM'
+CHAT_ID = '-1002408234754'
 bot = Bot(token=BOT_TOKEN)
 
 # API Information
@@ -90,7 +90,7 @@ async def send_telegram_message(message):
 
 async def check_for_new_links():
     """Check for new lecture links and send them if available."""
-    batchId = '100'  # Replace with actual batch ID
+    batchId = '99'  # Replace with actual batch ID
     while True:
         subjects = get_subject_details(batchId)
         for subject in subjects:
