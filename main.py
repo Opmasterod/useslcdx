@@ -108,7 +108,7 @@ async def check_for_new_links():
                 subjectId = subject["id"]
                 new_links = get_live_lecture_links(batchId, subjectId)
                 for link in new_links:
-                    message = f"☆☆𝗧𝗢𝗗𝗔𝗬 𝗟𝗜𝗩𝗘 𝗟𝗜𝗡𝗞𝗦★★\n\n{link['start_time']}**\n\n{link['lesson_name']}\n\n𝐋𝐢𝐯𝐞 - {link['link']}"
+                    message = f"☆☆𝗧𝗢𝗗𝗔𝗬 𝗟𝗜𝗩𝗘 𝗟𝗜𝗡𝗞𝗦★★\n\n❃.✮:▹ {link['start_time']} ◃:✮.❃\n\n{link['lesson_name']}\n\n■ 𝐋𝐢𝐯𝐞 - {link['link']}\n\n◆𝐒𝐢𝐫,𝐈𝐟 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐢 𝐫𝐞𝐦𝐨𝐯𝐞 𝐭𝐡𝐢𝐬 𝐜𝐨𝐧𝐭𝐞𝐧𝐭 𝐨𝐫 𝐝𝐨𝐧'𝐭 𝐝𝐨 𝐭𝐡𝐢𝐬 𝐚𝐧𝐲𝐦𝐨𝐫𝐞 𝐜𝐨𝐧𝐭𝐚𝐜𝐭 𝐮𝐬 𝐩𝐥𝐞𝐚𝐬𝐞 - @RemoveIIT"
                     await send_telegram_message(message)
         else:
             print(f"Outside operating hours: {current_time}. Waiting for the next time window...")
