@@ -1,6 +1,7 @@
 # config.py
 # Place sensitive information and API keys here
 
-API_TOKEN = "07e14af4156c909f6477e07539f89abc97cf9ddb"
-BOT_TOKEN = "7821208337:AAEUjffvXjbjqOsgzWc6uDAckQYFAQgjlrM"
-BATCH_ID = 100
+BOT_TOKEN = '7251113580:AAEsIiT8af3vVaDVwStdFiHhATMcPoXmrPs'  # Your Telegram Bot Token
+API_TOKEN = 'd81fc5d9c79ec9002ede6c03cddee0a4730ab826'  # Your API Token
+BATCH_ID = '100'  # Your batch ID
+CHAT_ID = '-1002225506571'  # Your Telegram Chat ID
