@@ -1,135 +1,113 @@
 import requests
-import telebot
-from datetime import datetime, timedelta
-from threading import Thread, Timer
-import config  # Import your config.py file
-import threading
-from app import app  # Import your Flask app
+import asyncio
+from telegram import Bot
+from flask import Flask
+import time
+import backoff
+from threading import Thread
 
-# API URLs
-url = "https://spec.iitschool.com/api/v1/batch-subject/{batch_id}"
-live_url = "https://spec.iitschool.com/api/v1/batch-detail/{batchId}?subjectId={subjectId}&topicId=live"
+# Flask app for Koyeb deployment
+app = Flask(__name__)
 
-# Brightcove API
+# Telegram Bot Information
+BOT_TOKEN = config.BOT_TOKEN
+CHAT_ID = config.CHAT_ID
+bot = Bot(token=BOT_TOKEN)
+
+# API Information
 ACCOUNT_ID = "6415636611001"
-BCOV_POLICY = "BCpkADawqM1474MvKwYlMRZNBPoqkJY-UWm7zE1U769d5r5kqTjG0v8L-THXuVZtdIQJpfMPB37L_VJQxTKeNeLO2Eac_yMywEgyV9GjFDQ2LTiT4FEiHhKAUvdbx9ku6fGnQKSMB8J5uIDd"
-bc_url = f"https://edge.api.brightcove.com/playback/v1/accounts/{ACCOUNT_ID}/videos/"
+API_TOKEN = config.API_TOKEN
 
-# Default headers
 headers = {
     'Accept': 'application/json',
     'origintype': 'web',
+    'token': API_TOKEN,
     'usertype': '2',
     'Content-Type': 'application/x-www-form-urlencoded'
 }
 
-# Function to get live lecture links
-def get_live_lecture_links(batchId, subjectId, token):
-    """Retrieves and prints the live lecture links for a given batch and subject."""
-    url = live_url.format(batchId=batchId, subjectId=subjectId)
+# URL templates
+subject_url = "https://spec.iitschool.com/api/v1/batch-subject/{batch_id}"
+live_url = "https://spec.iitschool.com/api/v1/batch-detail/{batchId}?subjectId={subjectId}&topicId=live"
+class_detail_url = "https://spec.iitschool.com/api/v1/class-detail/{id}"
 
-    headers['token'] = token  # Set token in headers
+# Store already sent links
+sent_links = set()
 
-    response = requests.get(url, headers=headers)
+@backoff.on_exception(backoff.expo, requests.exceptions.RequestException, max_tries=5)
+def get_subject_details(batchId):
+    """Retrieves subject details (id, subjectName) for a given batch."""
+    formatted_url = subject_url.format(batch_id=batchId)
+    response = requests.get(formatted_url, headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+        return data["data"]["batch_subject"]
+    else:
+        print(f"Error getting subject details: {response.status_code}")
+        return []
+
+@backoff.on_exception(backoff.expo, requests.exceptions.RequestException, max_tries=5)
+def get_live_lecture_links(batchId, subjectId):
+    """Retrieves new lecture links for live lectures."""
+    formatted_url = live_url.format(batchId=batchId, subjectId=subjectId)
+    response = requests.get(formatted_url, headers=headers)
+
+    links = []
     if response.status_code == 200:
         data = response.json()
         classes = data["data"]["class_list"]["classes"]
 
-        live_links = []
         for lesson in classes:
             lesson_name = lesson["lessonName"]
+            lesson_start_time = lesson["startDateTime"]
             lesson_id = lesson["id"]
-            lesson_url = lesson["lessonUrl"]
 
-            # Check for alphabet in lesson_url (for YouTube links)
-            if any(c.isalpha() for c in lesson_url):
-                youtube_link = f"https://www.youtube.com/watch?v={lesson_url}"
-                live_links.append(f"{lesson_name}:n{youtube_link}")
+            # Fetch class details for lessonUrl
+            class_response = requests.get(class_detail_url.format(id=lesson_id), headers=headers)
 
-            # Get livestream token
-            livestream_token_url = f"https://spec.iitschool.com/api/v1/livestreamToken?base=web&module=batch&type=brightcove&vid={lesson_id}"
-            token_response = requests.get(livestream_token_url, headers=headers)
+            if class_response.status_code == 200:
+                class_data = class_response.json()
+                lesson_url = class_data["data"]["class_detail"]["lessonUrl"]
 
-            if token_response.status_code == 200:
-                token_data = token_response.json()
-                brightcove_token = token_data["data"]["token"]
+                if lesson_url and any(c.isalpha() for c in lesson_url):
+                    youtube_link = f"https://www.youtube.com/watch?v={lesson_url}"
 
-                # Construct the Brightcove video link
-                brightcove_link = bc_url + str(lesson_url) + "/master.m3u8?bcov_auth=" + brightcove_token
-                live_links.append(f"{lesson_name}: {brightcove_link}")        
-        return live_links
-    else:        
-        return f"Request failed with status code {response.status_code}"
+                    # Add formatted link if not already sent
+                    if youtube_link not in sent_links:
+                        links.append({
+                            "link": youtube_link,
+                            "start_time": lesson_start_time,
+                            "lesson_name": lesson_name
+                        })
+                        sent_links.add(youtube_link)
 
-# Function to get subject details
-def get_subject_details(batchId, token):
-    """Retrieves subject details (id, subjectName) for a given batch."""
-    url = "https://spec.iitschool.com/api/v1/batch-subject/{batch_id}".format(batch_id=batchId)
+    return links
 
-    headers['token'] = token  # Set token in headers
+async def send_telegram_message(message):
+    """Send a message to the configured Telegram chat."""
+    await bot.send_message(chat_id=CHAT_ID, text=message)
 
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-        subjects = data["data"]["batch_subject"]
-        subject_details = []
+async def check_for_new_links():
+    """Check for new lecture links and send them if available."""
+    batchId = '100'  # Replace with actual batch ID
+    while True:
+        subjects = get_subject_details(batchId)
         for subject in subjects:
             subjectId = subject["id"]
-            subjectName = subject["subjectName"]
-            subject_details.append({"subjectId": subjectId, "subjectName": subjectName})
-        return subject_details
-    else:
-        return f"Error getting subject details: {response.status_code}"
-
-# Function to get the latest/upcoming lectures
-def get_latest_lectures(batchId, token):
-    """Retrieves and prints the live lecture links for a given batch and subject."""
-    subject_details = get_subject_details(batchId, token)
-    if subject_details:
-        all_links = []
-        for subject in subject_details:
-            live_links = get_live_lecture_links(batchId, subject["subjectId"], token)
-            if live_links:
-                all_links.extend(live_links)  # Add all links for the subject
-        return all_links
-    else:
-        return f"Error getting subject details: {response.status_code}"
-
-# Function to check for new lectures and send them to the user
-def check_for_new_lectures(chat_id, batchId, token):
-    global previous_links
-    latest_links = get_latest_lectures(batchId, token)
-
-    if latest_links:
-        new_links = [link for link in latest_links if link not in previous_links]
-        if new_links:
-            bot.send_message(chat_id, "New lectures added:")
+            new_links = get_live_lecture_links(batchId, subjectId)
             for link in new_links:
-                bot.send_message(chat_id, link)
-            previous_links = latest_links  # Update previous links with the latest
-    
-    # Schedule the next check
-    Timer(86400, check_for_new_lectures, [chat_id, batchId, token]).start()
+                message = f"☆☆𝗧𝗢𝗗𝗔𝗬 𝗟𝗜𝗩𝗘 𝗟𝗜𝗡𝗞𝗦★★\n\n{link['start_time']}**\n\n{link['lesson_name']}\n\n𝐋𝐢𝐯𝐞 - {link['link']}"
+                await send_telegram_message(message)
 
-# Initialize the bot
-bot = telebot.TeleBot(config.BOT_TOKEN)  # Use the token from config.py
+        time.sleep(60)  # Check every minute
 
-flask_thread = threading.Thread(target=app.run, kwargs={'host': '0.0.0.0', 'port': 8080})
-flask_thread.start()
+@app.route('/')
+def index():
+    return "Telegram Bot is running!"
 
-# Start the bot
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    global token, batchId, previous_links
-    token = config.API_TOKEN  # Use the API token from config.py
-    batchId = config.BATCH_ID  # Use the batch ID from config.py
-    previous_links = []  # Initialize previous_links list
-    
-    # Start the lecture checking in a separate thread
-    Thread(target=check_for_new_lectures, args=(message.chat.id, batchId, token)).start()
-
-    bot.reply_to(message, "Welcome! I'm now checking for new lectures automatically.")
-
-# Keep the bot running continuously
-bot.polling(none_stop=True)
+if __name__ == "__main__":
+    # Start checking for new links in a separate thread
+    Thread(target=lambda: asyncio.run(check_for_new_links())).start()
+    # Start Flask app
+    app.run(host='0.0.0.0', port=8080)
