@@ -100,7 +100,7 @@ async def check_for_new_links():
                 message = f"☆☆𝗧𝗢𝗗𝗔𝗬 𝗟𝗜𝗩𝗘 𝗟𝗜𝗡𝗞𝗦★★\n\n{link['start_time']}**\n\n{link['lesson_name']}\n\n𝐋𝐢𝐯𝐞 - {link['link']}"
                 await send_telegram_message(message)
 
-        time.sleep(60)  # Check every minute
+        time.sleep(360)  # Check every minute
 
 @app.route('/')
 def index():
