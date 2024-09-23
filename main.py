@@ -10,13 +10,13 @@ from threading import Thread
 app = Flask(__name__)
 
 # Telegram Bot Information
-BOT_TOKEN = config.BOT_TOKEN
-CHAT_ID = config.CHAT_ID
+BOT_TOKEN = '7251113580:AAEsIiT8af3vVaDVwStdFiHhATMcPoXmrPs'
+CHAT_ID = '-1002225506571'
 bot = Bot(token=BOT_TOKEN)
 
 # API Information
 ACCOUNT_ID = "6415636611001"
-API_TOKEN = config.API_TOKEN
+API_TOKEN = 'd81fc5d9c79ec9002ede6c03cddee0a4730ab826'
 
 headers = {
     'Accept': 'application/json',
