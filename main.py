@@ -5,6 +5,7 @@ from flask import Flask
 import time
 import backoff
 from threading import Thread
+from datetime import datetime
 
 # Flask app for Koyeb deployment
 app = Flask(__name__)
@@ -89,18 +90,29 @@ async def send_telegram_message(message):
     await bot.send_message(chat_id=CHAT_ID, text=message)
 
 async def check_for_new_links():
-    """Check for new lecture links and send them if available."""
+    """Check for new lecture links and send them if available, only between 6 AM and 8 PM."""
     batchId = '99'  # Replace with actual batch ID
     while True:
-        subjects = get_subject_details(batchId)
-        for subject in subjects:
-            subjectId = subject["id"]
-            new_links = get_live_lecture_links(batchId, subjectId)
-            for link in new_links:
-                message = f"☆☆𝗧𝗢𝗗𝗔𝗬 𝗟𝗜𝗩𝗘 𝗟𝗜𝗡𝗞𝗦★★\n\n{link['start_time']}**\n\n{link['lesson_name']}\n\n𝐋𝐢𝐯𝐞 - {link['link']}"
-                await send_telegram_message(message)
+        # Get the current time
+        current_time = datetime.now().time()
 
-        time.sleep(360)  # Check every minute
+        # Define the time range
+        start_time = datetime.strptime("06:00", "%H:%M").time()
+        end_time = datetime.strptime("20:00", "%H:%M").time()
+
+        # Check if current time is within the desired range
+        if start_time <= current_time <= end_time:
+            subjects = get_subject_details(batchId)
+            for subject in subjects:
+                subjectId = subject["id"]
+                new_links = get_live_lecture_links(batchId, subjectId)
+                for link in new_links:
+                    message = f"☆☆𝗧𝗢𝗗𝗔𝗬 𝗟𝗜𝗩𝗘 𝗟𝗜𝗡𝗞𝗦★★\n\n{link['start_time']}**\n\n{link['lesson_name']}\n\n𝐋𝐢𝐯𝐞 - {link['link']}"
+                    await send_telegram_message(message)
+        else:
+            print(f"Outside operating hours: {current_time}. Waiting for the next time window...")
+
+        time.sleep(360)  # Check every 6 minutes
 
 @app.route('/')
 def index():
