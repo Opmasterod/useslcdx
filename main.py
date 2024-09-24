@@ -12,8 +12,8 @@ from urllib.parse import quote  # Replace deprecated url_quote with quote
 app = Flask(__name__)
 
 # Telegram Bot Information
-BOT_TOKEN = '7821208337:AAEUjffvXjbjqOsgzWc6uDAckQYFAQgjlrM'
-CHAT_ID = '-1002175574964'
+BOT_TOKEN = '7251113580:AAEsIiT8af3vVaDVwStdFiHhATMcPoXmrPs'
+CHAT_ID = '-1002225506571'
 bot = Bot(token=BOT_TOKEN)
 
 # API Information
@@ -92,7 +92,7 @@ async def send_telegram_message(message):
 
 async def check_for_new_links():
     """Check for new lecture links and send them if available, only between 6 AM and 8 PM."""
-    batchId = '119'  # Replace with actual batch ID
+    batchId = '100'  # Replace with actual batch ID
     while True:
         # Get the current time
         current_time = datetime.now().time()
