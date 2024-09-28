@@ -117,7 +117,7 @@ async def check_for_new_links(batch_chat_pairs):
         else:
             print(f"Outside operating hours: {current_time}. Waiting for the next time window...")
 
-        await asyncio.sleep(10)  # Check every 6 minutes
+        await asyncio.sleep(360)  # Check every 6 minutes
 
 @app.route('/')
 def index():
