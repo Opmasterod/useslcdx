@@ -15,7 +15,7 @@ BOT_TOKEN = '7193921126:AAFOJVvniqaxqFzePHfHlgK0I23Rwwx5sEw'
 bot = Bot(token=BOT_TOKEN)
 
 # API Information
-API_TOKEN = 'd81fc5d9c79ec9002ede6c03cddee0a4730ab826'
+API_TOKEN = '029d5fd72cf898e21630fac8870c94e52d3d4482'
 
 # Headers for API requests
 headers = {
@@ -117,7 +117,7 @@ async def check_for_new_links(batch_chat_pairs):
         else:
             print(f"Outside operating hours: {current_time}. Waiting for the next time window...")
 
-        await asyncio.sleep(360)  # Check every 6 minutes
+        await asyncio.sleep(300)  # Check every 6 minutes
 
 @app.route('/')
 def index():
