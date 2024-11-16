@@ -124,7 +124,7 @@ async def check_for_new_links(batch_chat_pairs):
                             await send_telegram_message(chatId, message)
 
                 if not links_found:  # If no links were found, send the "No lecture found" message
-                    no_lecture_message = "NO LECTURE FOUND"
+                    no_lecture_message = "NAHI AAYA LECTURE😖"
                     await send_telegram_message(chatId, no_lecture_message)
         else:
             print(f"Outside operating hours: {current_time}. Waiting for the next time window...")
