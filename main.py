@@ -129,7 +129,7 @@ async def check_for_new_links(batch_chat_pairs):
         else:
             print(f"Outside operating hours: {current_time}. Waiting for the next time window...")
 
-        await asyncio.sleep(60)  # Check every 2 minutes
+        await asyncio.sleep(100)  # Check every 2 minutes
 
         # Restart the bot at 12 AM every day
         if current_time >= datetime.strptime("00:00", "%H:%M").time() and current_time < datetime.strptime("00:01", "%H:%M").time():
