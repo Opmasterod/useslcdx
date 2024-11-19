@@ -18,7 +18,7 @@ BOT_TOKEN = '7193921126:AAFOJVvniqaxqFzePHfHlgK0I23Rwwx5sEw'
 bot = Bot(token=BOT_TOKEN)
 
 # API Information
-API_TOKEN = 'bc806fb02a96aa5580fbb493addcfc82d5a0c45b'
+API_TOKEN = '9fda05081d8fcb56acaa5999770d310835956881'
 
 # Headers for API requests
 headers = {
@@ -103,8 +103,8 @@ async def check_for_new_links(batch_chat_pairs):
         current_time = datetime.now().time()
 
         # Define the time range
-        start_time = datetime.strptime("06:00", "%H:%M").time()
-        end_time = datetime.strptime("20:00", "%H:%M").time()
+        start_time = datetime.strptime("00:00", "%H:%M").time()
+        end_time = datetime.strptime("23:00", "%H:%M").time()
 
         # Check if current time is within the desired range
         if start_time <= current_time <= end_time:
@@ -134,7 +134,7 @@ async def check_for_new_links(batch_chat_pairs):
         else:
             print(f"Outside operating hours: {current_time}. Waiting for the next time window...")
 
-        await asyncio.sleep(100)  # Check every 2 minutes
+        await asyncio.sleep(150)  # Check every 2 minutes
 
         # Monitor for inactivity and restart if necessary
         if (datetime.now() - last_message_time).total_seconds() > 600:
