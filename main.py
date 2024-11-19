@@ -104,7 +104,7 @@ async def check_for_new_links(batch_chat_pairs):
 
         # Define the time range
         start_time = datetime.strptime("00:00", "%H:%M").time()
-        end_time = datetime.strptime("23:00", "%H:%M").time()
+        end_time = datetime.strptime("23:59", "%H:%M").time()
 
         # Check if current time is within the desired range
         if start_time <= current_time <= end_time:
