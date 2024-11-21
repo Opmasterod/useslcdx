@@ -20,6 +20,8 @@ bot = Bot(token=BOT_TOKEN)
 # API Information
 API_TOKEN = '9fda05081d8fcb56acaa5999770d310835956881'
 
+CHANNEL_2 = os.getenv("CHANNEL2")
+
 # Headers for API requests
 headers = {
     'Accept': 'application/json',
@@ -160,10 +162,9 @@ def index():
 if __name__ == "__main__":
     # Define multiple batch-chat pairs
     batch_chat_pairs = [
-        (123, -1002388515011),  # Example: Batch ID and Chat ID
-        (123, -1002261455163),
-        # Add more batch-chat pairs as needed
-    ]
+        (123, CHANNEL_2),  # Example: Batch ID and Chat I
+    ]    # Add more batch-chat pairs as needed
+    
     # Start monitoring thread for 6-hour auto-restart
     Thread(target=auto_restart_thread).start()
     # Start checking for new links in a separate thread
