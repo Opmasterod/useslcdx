@@ -14,7 +14,7 @@ import subprocess
 app = Flask(__name__)
 
 # Telegram Bot Information
-BOT_TOKEN = '7193921126:AAFOJVvniqaxqFzePHfHlgK0I23Rwwx5sEw'
+BOT_TOKEN = os.getenv("BOTOP")
 bot = Bot(token=BOT_TOKEN)
 
 # API Information
